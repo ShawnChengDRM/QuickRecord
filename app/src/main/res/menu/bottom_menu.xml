@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/tab_menu_home"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_home_24dp"
+        android:title="@string/bottom_menu_home"
+        />
+
+    <item
+        android:id="@+id/tab_menu_record"
+        android:orderInCategory="2"
+        android:icon="@drawable/ic_record_24dp"
+        android:title="@string/bottom_menu_record"
+        />
+
+    <item
+        android:id="@+id/tab_menu_memo"
+        android:orderInCategory="3"
+        android:icon="@drawable/ic_find_24dp"
+        android:title="@string/bottom_menu_memo"
+        />
+
+    <item
+        android:id="@+id/tab_menu_me"
+        android:orderInCategory="4"
+        android:icon="@drawable/ic_me_24dp"
+        android:title="@string/bottom_menu_me"
+        />
+</menu>
