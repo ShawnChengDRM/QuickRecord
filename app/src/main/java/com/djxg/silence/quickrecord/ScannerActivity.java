@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -32,12 +33,14 @@ import com.djxg.silence.quickrecord.camera.CameraManager;
 import com.djxg.silence.quickrecord.decode.CaptureActivityHandler;
 import com.djxg.silence.quickrecord.decode.DecodeManager;
 import com.djxg.silence.quickrecord.decode.InactivityTimer;
+import com.djxg.silence.quickrecord.editor.EditActivity;
 import com.djxg.silence.quickrecord.ui.ImageDialog;
 import com.djxg.silence.quickrecord.ui.ScannerFinderView;
 import com.djxg.silence.quickrecord.utils.Tools;
 import com.google.zxing.Result;
 import com.djxg.silence.quickrecord.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
@@ -315,7 +318,16 @@ public class ScannerActivity extends AppCompatActivity
     }
 
     private void phoneSucceed(String result, Bitmap bitmap){
-        ImageDialog dialog = new ImageDialog(this);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] bytes = stream.toByteArray();
+
+        Intent intent = new Intent(ScannerActivity.this, EditActivity.class);
+        intent.putExtra("resultImage", bytes);
+        intent.putExtra("resultText", result);
+        startActivity(intent);
+/*        ImageDialog dialog = new ImageDialog(this);
         dialog.addBitmap(bitmap);
         dialog.addTitle(TextUtils.isEmpty(result) ? "未识别到手机号码" : result);
         dialog.show();
@@ -324,10 +336,10 @@ public class ScannerActivity extends AppCompatActivity
             public void onDismiss(DialogInterface dialog) {
                 restartPreview();
             }
-        });
+        });*/
     }
 
-    private Handler mHandler = new Handler(){
+/*    private Handler mHandler = new Handler(){
 
         @Override
         public void handleMessage(Message msg) {
@@ -345,7 +357,7 @@ public class ScannerActivity extends AppCompatActivity
                     break;
             }
         }
-    };
+    };*/
 
     public void buildProgressDialog() {
         if (progressDialog == null) {

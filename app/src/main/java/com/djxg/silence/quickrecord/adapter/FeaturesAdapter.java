@@ -11,7 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.djxg.silence.quickrecord.BusinessC.MainEngineActivity;
+import com.djxg.silence.quickrecord.BusinessC.SplashActivity;
 import com.djxg.silence.quickrecord.R;
+import com.djxg.silence.quickrecord.Recognition.SortManager;
 import com.djxg.silence.quickrecord.ScannerActivity;
 import com.djxg.silence.quickrecord.bean.Features;
 
@@ -69,8 +72,10 @@ public class FeaturesAdapter extends RecyclerView.Adapter<FeaturesAdapter.ViewHo
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ScannerActivity.class);
-                mContext.startActivity(intent);
+
+                SortManager sortManager = SortManager.Generate(mContext, position);
+                sortManager.choose();
+
             }
         });
     }
