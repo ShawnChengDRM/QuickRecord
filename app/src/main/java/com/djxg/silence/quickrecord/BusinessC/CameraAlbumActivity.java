@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,17 +19,29 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.djxg.silence.quickrecord.MyApplication;
 import com.djxg.silence.quickrecord.R;
+import com.djxg.silence.quickrecord.ScannerActivity;
+import com.djxg.silence.quickrecord.editor.EditActivity;
+import com.djxg.silence.quickrecord.tess.TessEngine;
+import com.djxg.silence.quickrecord.utils.ProcessUtils;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.PlanarYUVLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class CameraAlbumActivity extends AppCompatActivity {
 
@@ -43,6 +57,8 @@ public class CameraAlbumActivity extends AppCompatActivity {
     private File mImageFile;
 
     private Uri mImageUri;
+
+    private byte[] mRotatedData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +93,15 @@ public class CameraAlbumActivity extends AppCompatActivity {
     }
 
 
-
-
     private void selectCamera() {
 
         createImageFile();
         //Toast.makeText(this, mImageUri+"AAA", Toast.LENGTH_SHORT).show();
 
         //启动相机程序
-        Intent cameraIntent = new Intent("android.media.action.IMAGE_CAPTURE");
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+        //Intent cameraIntent = new Intent("android.media.action.IMAGE_CAPTURE");
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
         startActivityForResult(cameraIntent, REQUEST_CAMERA);
     }
     private void selectAlbum() {
@@ -132,45 +147,107 @@ public class CameraAlbumActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Bitmap bmpGray;
+        Bitmap binarymap;
+
+        TessEngine tessEngine;
+        String result;
+
         if (RESULT_OK != resultCode) {
             return;
         }
         switch (requestCode) {
             case REQUEST_CAMERA:
                 //cropImage(mImageUri);
+/*                Bitmap bitmap_c = null;
                 try {
-                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver()
+                    bitmap_c = BitmapFactory.decodeStream(getContentResolver()
                     .openInputStream(mImageUri));
-                    mImageShow.setImageBitmap(bitmap);
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                }*/
+
+                Bitmap bitmap_c = data.getParcelableExtra("data");
+
+                mImageShow.setImageBitmap(bitmap_c);
+
+
+                tessEngine = TessEngine.Generate(MyApplication.sAppContext);
+                bmpGray = ProcessUtils.bitmap2Gray(bitmap_c);
+                binarymap = ProcessUtils.gray2Binary(bmpGray);
+                result = tessEngine.detectText(binarymap);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                if (bitmap_c != null) {
+                    bmpGray.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 }
+                byte[] bytes = stream.toByteArray();
+
+                Intent intent = new Intent(CameraAlbumActivity.this, EditActivity.class);
+                intent.putExtra("resultImage", bytes);
+                intent.putExtra("resultText", result);
+                startActivity(intent);
+
+
+
                 break;
             case REQUEST_ALBUM:
                 createImageFile();
+
+                //Bitmap bitmap1 = null;
                 if (!mImageFile.exists()) {
                     return;
                 }
                 Uri uri = data.getData();
                 if (uri != null) {
+
                     cropImage(uri);
                 }
+
+
                 break;
             case REQUEST_CROP:
                 //mPictureIb.setImageURI(Uri.fromFile(mImageFile));
                 //mImageShow.setImageURI(mImageUri);
-                Bitmap bitmap = null;
+
+
+                Bitmap bitmap_p = null;
                 try {
-                    bitmap = BitmapFactory.decodeStream(getContentResolver()
+                    bitmap_p = BitmapFactory.decodeStream(getContentResolver()
                             .openInputStream(mImageUri));
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                mImageShow.setImageBitmap(bitmap);
+
+                mImageShow.setImageBitmap(bitmap_p);
+
+                bmpGray = ProcessUtils.bitmap2Gray(bitmap_p);
+                binarymap = ProcessUtils.gray2Binary(bmpGray);
+
+                tessEngine = TessEngine.Generate(MyApplication.sAppContext);
+                result = tessEngine.detectText(binarymap);
+
+                ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+                if (bitmap_p != null) {
+                    binarymap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
+                }
+                byte[] bytes1 = stream1.toByteArray();
+
+
+
+                Intent intent_p = new Intent(CameraAlbumActivity.this, EditActivity.class);
+                intent_p.putExtra("resultImage", bytes1);
+                intent_p.putExtra("resultText", result);
+                startActivity(intent_p);
+
                 break;
 
             default:
                 break;
         }
     }
+
 }
