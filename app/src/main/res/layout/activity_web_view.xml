@@ -13,4 +13,10 @@
         android:layout_weight="1" >
     </WebView>
 
+    <EditText
+        android:id="@+id/b_card_result"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
 </LinearLayout>

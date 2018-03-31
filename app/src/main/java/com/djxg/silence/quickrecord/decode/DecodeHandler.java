@@ -98,7 +98,7 @@ public class DecodeHandler extends Handler {
 
             PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(mRotatedData, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
 
-            if( mActivity.isQRCode()){
+            if( mActivity.isQRCode().equals("Y")){
                 BinaryBitmap bitmap1 = new BinaryBitmap(new HybridBinarizer(source));
                 rawResult = mMultiFormatReader.decode(bitmap1, mHints);
             }else{

@@ -100,7 +100,7 @@ public class MainEngineActivity extends AppCompatActivity {
         datapath = mContext.getFilesDir().getPath() + "/tesseract/bcdata";
 
         //检查训练文件是否存在
-        //BcardDataManager.checkFile(mContext, new File(datapath + "bcdata"));
+        BcardDataManager.checkFile(mContext, new File(datapath));
 
         int rlt = Native.openBcrEngine(datapath); // step 1: open OCR engine
         Log.d(TAG, rlt + "AAA");

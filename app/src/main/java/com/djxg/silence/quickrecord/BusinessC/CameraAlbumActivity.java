@@ -1,6 +1,7 @@
 package com.djxg.silence.quickrecord.BusinessC;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -42,6 +43,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CameraAlbumActivity extends AppCompatActivity {
 
@@ -49,6 +52,8 @@ public class CameraAlbumActivity extends AppCompatActivity {
     public static final int REQUEST_ALBUM = 2;
     public static final int REQUEST_CROP = 3;
     public static final String IMAGE_UNSPECIFIED = "image/*";
+
+    private static Pattern pattern = Pattern.compile("(1|861)(3|5|7|8)\\d{9}$*");
 
     private Button mPictureIb;
     private Button mCameraIb;
@@ -58,7 +63,11 @@ public class CameraAlbumActivity extends AppCompatActivity {
 
     private Uri mImageUri;
 
+    ProgressDialog progressDialog;
+
     private byte[] mRotatedData;
+
+    private String choose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +78,20 @@ public class CameraAlbumActivity extends AppCompatActivity {
         mCameraIb = findViewById(R.id.ib_camera);
         mImageShow = findViewById(R.id.image_show);
 
+        progressDialog = new ProgressDialog(CameraAlbumActivity.this);
+        progressDialog.setTitle("识别中");
+        progressDialog.setMessage("Loading......");
+        progressDialog.setCancelable(true);
+
+        Intent intent_g = getIntent();
+        choose = intent_g.getStringExtra("choose");
+
+
         mCameraIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectCamera();
+
             }
         });
 
@@ -86,6 +105,7 @@ public class CameraAlbumActivity extends AppCompatActivity {
                             new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 } else {
                     selectAlbum();
+
                 }
 
             }
@@ -144,6 +164,26 @@ public class CameraAlbumActivity extends AppCompatActivity {
         }
 
     }
+
+    //正则匹配手机号
+    public static String getTelNum(String sParam){
+        if(TextUtils.isEmpty(sParam)){
+            return "";
+        }
+
+        Matcher matcher = pattern.matcher(sParam);
+        StringBuilder bf = new StringBuilder();
+        while (matcher.find()) {
+            bf.append(matcher.group()).append(",");
+        }
+        int len = bf.length();
+        if (len > 0) {
+            bf.deleteCharAt(len - 1);
+        }
+        return bf.toString();
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -157,6 +197,10 @@ public class CameraAlbumActivity extends AppCompatActivity {
         if (RESULT_OK != resultCode) {
             return;
         }
+
+        progressDialog.show();
+
+
         switch (requestCode) {
             case REQUEST_CAMERA:
                 //cropImage(mImageUri);
@@ -173,24 +217,30 @@ public class CameraAlbumActivity extends AppCompatActivity {
 
                 mImageShow.setImageBitmap(bitmap_c);
 
-
                 tessEngine = TessEngine.Generate(MyApplication.sAppContext);
+                //progressDialog.show();
                 bmpGray = ProcessUtils.bitmap2Gray(bitmap_c);
                 binarymap = ProcessUtils.gray2Binary(bmpGray);
                 result = tessEngine.detectText(binarymap);
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 if (bitmap_c != null) {
-                    bmpGray.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    binarymap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 }
                 byte[] bytes = stream.toByteArray();
+
+                if (choose.equals("Y")) {
+                    result = getTelNum(result);
+                }
+
+                progressDialog.dismiss();
+
+                //Toast.makeText(CameraAlbumActivity.this, result, Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(CameraAlbumActivity.this, EditActivity.class);
                 intent.putExtra("resultImage", bytes);
                 intent.putExtra("resultText", result);
                 startActivity(intent);
-
-
 
                 break;
             case REQUEST_ALBUM:
@@ -224,6 +274,8 @@ public class CameraAlbumActivity extends AppCompatActivity {
 
                 mImageShow.setImageBitmap(bitmap_p);
 
+
+                //progressDialog.show();
                 bmpGray = ProcessUtils.bitmap2Gray(bitmap_p);
                 binarymap = ProcessUtils.gray2Binary(bmpGray);
 
@@ -236,7 +288,11 @@ public class CameraAlbumActivity extends AppCompatActivity {
                 }
                 byte[] bytes1 = stream1.toByteArray();
 
+                if (choose.equals("Y")) {
+                    result = getTelNum(result);
+                }
 
+                progressDialog.dismiss();
 
                 Intent intent_p = new Intent(CameraAlbumActivity.this, EditActivity.class);
                 intent_p.putExtra("resultImage", bytes1);

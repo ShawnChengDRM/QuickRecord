@@ -51,14 +51,16 @@ public class HomeFragment extends BaseFragment {
         toolbar.setTitle(title);
 
         if (init_list) {
-            Features features1 = new Features("文字识别", R.drawable.home);
+            Features features1 = new Features("扫描文字识别", R.drawable.home);
             featuresList.add(features1);
-            Features features2 = new Features("二维码识别", R.drawable.home);
+            Features features2 = new Features("名片识别", R.drawable.home);
             featuresList.add(features2);
-            Features features3 = new Features("名片识别", R.drawable.home);
+            Features features3 = new Features("图片识别", R.drawable.home);
             featuresList.add(features3);
-            Features features4 = new Features("手机号识别", R.drawable.home);
+            Features features4 = new Features("二维码识别", R.drawable.home);
             featuresList.add(features4);
+            Features features5 = new Features("手机号识别", R.drawable.home);
+            featuresList.add(features5);
 
             init_list = false;
         }

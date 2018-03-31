@@ -59,11 +59,13 @@ public class ScannerActivity extends AppCompatActivity
     private SurfaceView mSurfaceView;
     private ViewStub mSurfaceViewStub;
     private DecodeManager mDecodeManager = new DecodeManager();
-    private Switch switch1;
+    //private Switch switch1;
     private Button bt;
 
     private ProgressDialog progressDialog;
     private Bitmap bmp;
+
+    private String choose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class ScannerActivity extends AppCompatActivity
     private void initView() {
         mQrCodeFinderView = (ScannerFinderView) findViewById(R.id.qr_code_view_finder);
         mSurfaceViewStub = (ViewStub) findViewById(R.id.qr_code_view_stub);
-        switch1 = (Switch) findViewById(R.id.switch1);
+        //switch1 = (Switch) findViewById(R.id.switch1);
         mHasSurface = false;
 
         bt = (Button) findViewById(R.id.bt);
@@ -104,12 +106,15 @@ public class ScannerActivity extends AppCompatActivity
         return mQrCodeFinderView.getRect();
     }
 
-    public boolean isQRCode() {
-        return switch1.isChecked();
+    public String isQRCode() {
+        return choose;
     }
 
     private void initData() {
         mInactivityTimer = new InactivityTimer(this);
+        Intent intent = getIntent();
+        choose = intent.getStringExtra("choose");
+
     }
 
     @Override
@@ -256,7 +261,7 @@ public class ScannerActivity extends AppCompatActivity
         } else {
             Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(200L);
-            if (switch1.isChecked()) {
+            if (choose.equals("Y")) {
                 qrSucceed(result.getText());
             } else {
                 phoneSucceed(result.getText(), result.getBitmap());
