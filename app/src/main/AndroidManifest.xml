@@ -40,11 +40,11 @@
         <activity android:name=".BusinessC.SplashActivity" />
         <activity android:name=".BusinessC.MainEngineActivity" />
         <activity android:name=".BusinessC.WebViewActivity" />
-        <activity android:name=".BusinessC.CameraAlbumActivity"></activity>
-        
+        <activity android:name=".BusinessC.CameraAlbumActivity" />
+
         <provider
-            android:authorities="com.djxg.silence.quickrecord.fileprovider"
             android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.djxg.silence.quickrecord.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -52,6 +52,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity
+            android:name=".editor.InfoEditActivity"
+            android:label="@string/title_activity_info_edit"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".editor.InfoShowActivity"
+            android:label="@string/title_activity_info_show"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

@@ -1,12 +1,14 @@
 package com.djxg.silence.quickrecord.bean;
 
+import org.litepal.crud.DataSupport;
+
 /**
  * Created by silence on 2018/1/5.
  */
 
-public class Record {
+public class Record extends DataSupport {
 
-    private int record_image;
+    private byte[] record_image;
 
     private String record_text;
 
@@ -20,11 +22,11 @@ public class Record {
         this.record_time = record_time;
     }
 
-    public int getRecord_image() {
+    public byte[] getRecord_image() {
         return record_image;
     }
 
-    public void setRecord_image(int record_image) {
+    public void setRecord_image(byte[] record_image) {
         this.record_image = record_image;
     }
 

@@ -23,6 +23,8 @@ public class HomeFragment extends BaseFragment {
     private Toolbar toolbar;
     private String title = "Home";
 
+    RecyclerView recyclerView;
+
     private List<Features> featuresList = new ArrayList<>();
 
     private FeaturesAdapter featuresAdapter = new FeaturesAdapter(getContext(), featuresList);
@@ -39,16 +41,18 @@ public class HomeFragment extends BaseFragment {
 
         toolbar = view.findViewById(R.id.toolbar);
 
-        RecyclerView recyclerView = view.findViewById(R.id.features_recycler_view);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(featuresAdapter);
+        recyclerView = view.findViewById(R.id.features_recycler_view);
+
     }
 
     @Override
     protected void initData() {
 
         toolbar.setTitle(title);
+        //用网格显示，一排有2个格子
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(featuresAdapter);
 
         if (init_list) {
             Features features1 = new Features("扫描文字识别", R.drawable.home);
