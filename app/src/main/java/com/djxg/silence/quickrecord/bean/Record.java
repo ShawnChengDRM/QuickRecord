@@ -8,6 +8,8 @@ import org.litepal.crud.DataSupport;
 
 public class Record extends DataSupport {
 
+    private int id;
+
     private byte[] record_image;
 
     private String record_text;
@@ -38,4 +40,11 @@ public class Record extends DataSupport {
         this.record_text = record_text;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

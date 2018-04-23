@@ -14,4 +14,8 @@
 
     <color name="color_item_normal">#ffffffff</color>
     <color name="color_item_press">#808080</color>
+
+    <color name="login_text">#BFFFFFFF</color>
+
+    <color name="bkg">#E8E8E8</color>
 </resources>

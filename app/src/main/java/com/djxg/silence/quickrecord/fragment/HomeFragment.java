@@ -43,12 +43,14 @@ public class HomeFragment extends BaseFragment {
 
         recyclerView = view.findViewById(R.id.features_recycler_view);
 
+        toolbar.setTitle(title);
+
     }
 
     @Override
     protected void initData() {
 
-        toolbar.setTitle(title);
+
         //用网格显示，一排有2个格子
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(layoutManager);

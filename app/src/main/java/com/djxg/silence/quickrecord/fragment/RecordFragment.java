@@ -48,6 +48,8 @@ public class RecordFragment extends BaseFragment {
 
         recyclerView = view.findViewById(R.id.record_recycler_view);
 
+        toolbar.setTitle(title);
+
 
         //在Activity中注册需要上下文菜单的View
         registerForContextMenu(recyclerView);
@@ -98,7 +100,7 @@ public class RecordFragment extends BaseFragment {
 
     @Override
     protected void initData() {
-        toolbar.setTitle(title);
+
 
         recordList = DataBaseTool.InquireRecordALL();
         RecordAdapter recordAdapter = new RecordAdapter(getContext(), recordList);
@@ -145,6 +147,10 @@ public class RecordFragment extends BaseFragment {
                 intentAlter.putExtra("time", update);
                 startActivity(intentAlter);
                 //Toast.makeText(getContext(), position + " 修改", Toast.LENGTH_SHORT).show();
+                break;
+
+            case 3:
+
                 break;
         }
 

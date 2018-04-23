@@ -18,6 +18,7 @@ import com.djxg.silence.quickrecord.R;
 import com.djxg.silence.quickrecord.bean.Record;
 import com.djxg.silence.quickrecord.database.DataBaseTool;
 import com.djxg.silence.quickrecord.editor.InfoShowActivity;
+import com.djxg.silence.quickrecord.utils.ProcessUtils;
 
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
             //menuInfo is null
             menu.add(0, 1, 0, "删除");//groupId, itemId, order, title
             menu.add(0, 2, 0, "修改");
+            menu.add(0, 3, 0, "分类保存");
         }
 
     }
@@ -88,10 +90,13 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         //把二进制数据转换成bitmap
         Bitmap bitmap = BitmapFactory.decodeByteArray(records.getRecord_image(),
                 0, records.getRecord_image().length);
+        //压缩
+        Bitmap bitmap1 = ProcessUtils.compression(bitmap);
 
         //把bitmap裁剪成圆形
-        Bitmap bitmap1 = DataBaseTool.toRoundBitmap(bitmap);
-        holder.recordImage.setImageBitmap(bitmap1);
+        Bitmap bitmap2 = ProcessUtils.toRoundBitmap(bitmap1);
+
+        holder.recordImage.setImageBitmap(bitmap2);
 
         //Glide.with(mContext).load(records.getRecord_image()).into(holder.recordImage);
         holder.recordText.setText(records.getRecord_text());

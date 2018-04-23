@@ -32,8 +32,10 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         //image = BitmapFactory.decodeResource(getResources(), R.drawable.tt);
-
         initView();
+
+
+
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -81,7 +83,7 @@ public class MainActivity extends BaseActivity {
         }
     };
 
-    private void initView() {
+    protected void initView() {
 
         homeFragment = new HomeFragment();
         recordFragment = new RecordFragment();
@@ -102,6 +104,11 @@ public class MainActivity extends BaseActivity {
         bottomNavigationMain = findViewById(R.id.bottom_navigation_main);
         //添加BottomNavigationView点击监听
         bottomNavigationMain.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+
+    protected void initData() {
+
     }
 
 }
