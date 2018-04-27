@@ -131,7 +131,7 @@ public class MeFragment extends BaseFragment {
     protected void initData() {
 
         if (init_list) {
-            MeItem meItem1 = new MeItem(R.drawable.qrcode, "二维码名片");
+            MeItem meItem1 = new MeItem(R.drawable.qrcode, "查找");
             meItemList.add(meItem1);
             MeItem meItem2 = new MeItem(R.drawable.ic_settings_24dp, "设置");
             meItemList.add(meItem2);

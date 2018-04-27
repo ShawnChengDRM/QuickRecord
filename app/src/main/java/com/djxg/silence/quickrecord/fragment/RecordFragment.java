@@ -1,7 +1,9 @@
 package com.djxg.silence.quickrecord.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -150,12 +152,80 @@ public class RecordFragment extends BaseFragment {
                 break;
 
             case 3:
-
+                showSortDialog();
                 break;
         }
 
         return super.onContextItemSelected(item);
 
     }
+
+    private void showSortDialog(){
+        final String radioItems[] = new String[]{"radioItem1","radioItem1","radioItem1","radioItem1"};
+
+        AlertDialog.Builder radioDialog = new AlertDialog.Builder(getContext());
+        radioDialog.setTitle("类型");
+        radioDialog.setIcon(R.mipmap.ic_launcher_round);
+
+    /*
+        设置item 不能用setMessage()
+        用setSingleChoiceItems
+        items : radioItems[] -> 单选选项数组
+        checkItem : 0 -> 默认选中的item
+        listener -> 回调接口
+    */
+        radioDialog.setSingleChoiceItems(radioItems, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(),radioItems[which],Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //设置按钮
+        radioDialog.setPositiveButton("确定"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        showLevelDialog();
+                        dialog.dismiss();
+                    }
+                });
+
+        radioDialog.create().show();
+    }
+
+    private void showLevelDialog(){
+        final String radioItems[] = new String[]{"radioItem1","radioItem1","radioItem1","radioItem1"};
+
+        AlertDialog.Builder radioDialog = new AlertDialog.Builder(getContext());
+        radioDialog.setTitle("类型");
+        radioDialog.setIcon(R.mipmap.ic_launcher_round);
+
+    /*
+        设置item 不能用setMessage()
+        用setSingleChoiceItems
+        items : radioItems[] -> 单选选项数组
+        checkItem : 0 -> 默认选中的item
+        listener -> 回调接口
+    */
+        radioDialog.setSingleChoiceItems(radioItems, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(),radioItems[which],Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //设置按钮
+        radioDialog.setPositiveButton("确定"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        radioDialog.create().show();
+    }
+
 
 }

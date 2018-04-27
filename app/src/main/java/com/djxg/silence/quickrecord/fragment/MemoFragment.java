@@ -1,14 +1,17 @@
 package com.djxg.silence.quickrecord.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,8 +20,13 @@ import com.djxg.silence.quickrecord.R;
 import com.djxg.silence.quickrecord.activity.LoginActivity;
 import com.djxg.silence.quickrecord.adapter.MemoAdapter;
 import com.djxg.silence.quickrecord.base.BaseFragment;
+import com.djxg.silence.quickrecord.bean.CategorySubjects;
 import com.djxg.silence.quickrecord.bean.Features;
 import com.djxg.silence.quickrecord.bean.MemoItem;
+import com.djxg.silence.quickrecord.bean.Universal;
+import com.djxg.silence.quickrecord.net.ApiMethods;
+import com.djxg.silence.quickrecord.net.MyObserver;
+import com.djxg.silence.quickrecord.net.ObserverOnNextListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +50,13 @@ public class MemoFragment extends BaseFragment {
 
     private MemoAdapter memoAdapter = new MemoAdapter(getContext(), memoItemList);
 
+    private ObserverOnNextListener<Universal> addCategoryListener;
+
     private boolean init_list = true;
+
+    int nowSize;
+
+    String editText = "";
 
     @Override
     protected int attachLayoutId() {
@@ -62,7 +76,10 @@ public class MemoFragment extends BaseFragment {
 
         SharedPreferences preferences = getContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         String username = preferences.getString("username", "");
+        final int user_id = preferences.getInt("id", 0);
         //Toast.makeText(getContext(), username, Toast.LENGTH_SHORT).show();
+
+
 
 
         imageView = view.findViewById(R.id.login_memo_image);
@@ -86,6 +103,49 @@ public class MemoFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
 
+
+                final EditText edit = new EditText(getContext());
+
+                AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
+                editDialog.setTitle("添加分类");
+                editDialog.setIcon(R.mipmap.ic_launcher_round);
+
+                //设置dialog布局
+                editDialog.setView(edit);
+
+                //设置按钮
+                editDialog.setNegativeButton("取消"
+                        , new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getContext(),
+                                        edit.getText().toString().trim(),Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        });
+
+                editDialog.setPositiveButton("确定"
+                        , new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getContext(),
+                                        edit.getText().toString().trim(),Toast.LENGTH_SHORT).show();
+
+                                editText = edit.getText().toString().trim();
+                                CategorySubjects categorySubjects = new CategorySubjects(user_id, edit.getText().toString().trim());
+
+                                ApiMethods.addCategory(new MyObserver<Universal>(getContext(), addCategoryListener),
+                                        categorySubjects);
+
+
+                                dialog.dismiss();
+                            }
+                        });
+
+                editDialog.create().show();
+
+
+
             }
         });
 
@@ -101,8 +161,11 @@ public class MemoFragment extends BaseFragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(memoAdapter);
 
+
+
+
         if (init_list) {
-            MemoItem memoItem1 = new MemoItem("文字", R.drawable.memo);
+/*            MemoItem memoItem1 = new MemoItem("文字", R.drawable.memo);
             memoItemList.add(memoItem1);
             MemoItem memoItem2 = new MemoItem("名片", R.drawable.memo);
             memoItemList.add(memoItem2);
@@ -111,10 +174,37 @@ public class MemoFragment extends BaseFragment {
             MemoItem memoItem4 = new MemoItem("二维码", R.drawable.memo);
             memoItemList.add(memoItem4);
             MemoItem memoItem5 = new MemoItem("手机号", R.drawable.memo);
-            memoItemList.add(memoItem5);
+            memoItemList.add(memoItem5);*/
+
+            SharedPreferences preferencesCategory = getContext().getSharedPreferences("category", Context.MODE_PRIVATE);
+            int size = preferencesCategory.getInt("sortSize", -1);
+            for (int i = 0; i < size; i++) {
+                memoItemList.add(new MemoItem(preferencesCategory.getString("sort_" + i, ""), R.drawable.memo));
+            }
 
             init_list = false;
         }
+
+        //新建addCategory监听器，重写onNext方法
+        addCategoryListener = new ObserverOnNextListener<Universal>() {
+            @Override
+            public void onNext(Universal universal) {
+                SharedPreferences preferencesCategory = getContext().getSharedPreferences("category", Context.MODE_PRIVATE);
+                int size = preferencesCategory.getInt("sortSize", -1);
+
+                SharedPreferences.Editor editor = getContext().getSharedPreferences("category", Context.MODE_PRIVATE)
+                        .edit();
+                editor.putString("sort_" + size, editText);
+                size++;
+                editor.putInt("sortSize", size);
+                editor.apply();
+
+
+                memoItemList.add(new MemoItem(editText, R.drawable.memo));
+                memoAdapter.notifyDataSetChanged();
+
+            }
+        };
 
 
     }
@@ -147,6 +237,7 @@ public class MemoFragment extends BaseFragment {
                 imageView.setVisibility(View.GONE);
                 floatingActionButton.setVisibility(View.VISIBLE);
             }
+            memoAdapter.notifyDataSetChanged();
         }
     }
 
@@ -166,6 +257,8 @@ public class MemoFragment extends BaseFragment {
                 imageView.setVisibility(View.GONE);
                 floatingActionButton.setVisibility(View.VISIBLE);
             }
+
+            memoAdapter.notifyDataSetChanged();
 
         }
     }
